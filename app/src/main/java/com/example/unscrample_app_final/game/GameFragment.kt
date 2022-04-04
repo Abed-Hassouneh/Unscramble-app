@@ -32,7 +32,6 @@ class GameFragment : Fragment() {
     private val viewModel: GameViewModel by viewModels()
     private lateinit var binding: GameFragmentBinding
 
-
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?
@@ -46,7 +45,6 @@ class GameFragment : Fragment() {
 
         if (this::binding.isInitialized) {
             binding.gameViewModel = viewModel
-            binding.maxNoOfWords = MAX_NO_OF_WORDS
             binding.lifecycleOwner = viewLifecycleOwner
 
             binding.submit.setOnClickListener { onSubmitWord() }

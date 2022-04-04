@@ -8,10 +8,12 @@ class GameViewModel:ViewModel() {
     val score:LiveData<Int> get() = _score
     val currentWordCount:LiveData<Int> get() = _currentWordCount
     val currentScrambledWord:LiveData<String> get() = _currentScrambledWord
+    val maxNoOfWords:LiveData<Int> get() =  _maxNoOfWords
 
     private val _score = MutableLiveData<Int>()
     private val _currentWordCount = MutableLiveData<Int>()
     private val _currentScrambledWord = MutableLiveData<String>()
+    private val _maxNoOfWords = MutableLiveData<Int>()
 
     private var wordList = mutableListOf<String>()
     private lateinit var currentWord:String
@@ -19,6 +21,9 @@ class GameViewModel:ViewModel() {
     init {
         Log.d("GameFragment", "GameViewModel created!")
         loadNextWord()
+        _score.value = 0
+        _currentWordCount.value = 0
+        _maxNoOfWords.value = 10
     }
 
     override fun onCleared() {
@@ -66,5 +71,4 @@ class GameViewModel:ViewModel() {
     private fun increaseScore() {
         _score.value = _score.value?.plus(SCORE_INCREASE)
     }
-
 }
