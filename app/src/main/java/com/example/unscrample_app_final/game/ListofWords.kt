@@ -192,7 +192,6 @@ val allWordsList: List<String> =
         "xylophone",
         "yoga",
         "yogurt",
-        "yoyo",
         "you",
         "year",
         "yummy",
