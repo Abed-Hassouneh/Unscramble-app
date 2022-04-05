@@ -50,26 +50,23 @@ class GameFragment : Fragment() {
             binding.submit.setOnClickListener { onSubmitWord() }
             binding.skip.setOnClickListener { onSkipWord() }
         }
+        viewModel.showFinalDialog.observe(viewLifecycleOwner){
+            showFinalScoreDialog()
+        }
     }
 
     private fun onSubmitWord() {
         val userInput:String = binding.textInputEditText.text.toString()
-        if(viewModel.isUserWordCorrect(userInput)){
+        if (viewModel.submitWord(userInput)){
             setErrorTextField(false)
-            if(!viewModel.nextWord()){
-                showFinalScoreDialog()
-            }
         }else{
             setErrorTextField(true)
         }
     }
 
     private fun onSkipWord() {
-        if (viewModel.nextWord()) {
-            setErrorTextField(false)
-        } else {
-            showFinalScoreDialog()
-        }
+        setErrorTextField(false)
+        viewModel.skipWord()
     }
 
     private fun restartGame() {

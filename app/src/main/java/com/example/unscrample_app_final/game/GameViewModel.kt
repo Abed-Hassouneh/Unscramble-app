@@ -9,11 +9,13 @@ class GameViewModel:ViewModel() {
     val currentWordCount:LiveData<Int> get() = _currentWordCount
     val currentScrambledWord:LiveData<String> get() = _currentScrambledWord
     val maxNoOfWords:LiveData<Int> get() =  _maxNoOfWords
+    val showFinalDialog:LiveData<Any> get() = _showFinalDialog
 
     private val _score = MutableLiveData<Int>()
     private val _currentWordCount = MutableLiveData<Int>()
     private val _currentScrambledWord = MutableLiveData<String>()
     private val _maxNoOfWords = MutableLiveData<Int>()
+    private val _showFinalDialog = SingleLiveEvent<Any>()
 
     private var wordList = mutableListOf<String>()
     private lateinit var currentWord:String
@@ -31,13 +33,6 @@ class GameViewModel:ViewModel() {
         Log.d("GameFragment","On cleared")
     }
 
-    fun isUserWordCorrect(playerWord:String):Boolean{
-        return if(playerWord.equals(currentWord,false)){
-            increaseScore()
-            true
-        }else false
-    }
-
     fun reInit(){
         _score.value = 0
         _currentWordCount.value = 0
@@ -45,11 +40,21 @@ class GameViewModel:ViewModel() {
         loadNextWord()
     }
 
-    fun nextWord(): Boolean {
-        return if (_currentWordCount.value!! < MAX_NO_OF_WORDS) {
-            loadNextWord()
-            true
-        } else false
+    fun submitWord(text:String):Boolean{
+        if(isUserWordCorrect(text)){
+            increaseScore()
+            if(!nextWord()){
+                _showFinalDialog.call()
+            }
+            return true
+        }
+        return false
+    }
+
+    fun skipWord(){
+        if (!nextWord()) {
+            _showFinalDialog.call()
+        }
     }
 
     private fun loadNextWord(){
@@ -70,5 +75,16 @@ class GameViewModel:ViewModel() {
 
     private fun increaseScore() {
         _score.value = _score.value?.plus(SCORE_INCREASE)
+    }
+
+    private fun isUserWordCorrect(playerWord:String):Boolean{
+        return playerWord.equals(currentWord,false)
+    }
+
+    private fun nextWord(): Boolean {
+        return if (_currentWordCount.value!! < _maxNoOfWords.value!!) {
+            loadNextWord()
+            true
+        } else false
     }
 }

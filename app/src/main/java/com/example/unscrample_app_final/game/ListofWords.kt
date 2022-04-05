@@ -16,7 +16,6 @@
 
 package com.example.unscrample_app_final.game
 
-const val MAX_NO_OF_WORDS = 10
 const val SCORE_INCREASE = 20
 val allWordsList: List<String> =
     listOf("animal",
