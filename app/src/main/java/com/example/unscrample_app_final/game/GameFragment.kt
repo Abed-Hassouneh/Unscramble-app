@@ -16,16 +16,13 @@
 
 package com.example.unscrample_app_final.game
 
-import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-
 import com.example.unscrample_app_final.R
 import com.example.unscrample_app_final.databinding.GameFragmentBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -33,89 +30,54 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class GameFragment : Fragment() {
     private val viewModel: GameViewModel by viewModels()
-
-
-    // Binding object instance with access to the views in the game_fragment.xml layout
     private lateinit var binding: GameFragmentBinding
-
-    // Create a ViewModel the first time the fragment is created.
-    // If the fragment is re-created, it receives the same GameViewModel instance created by the
-    // first fragment
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View {
-        // Inflate the layout XML file and return a binding object instance
         binding = DataBindingUtil.inflate(inflater, R.layout.game_fragment,container,false)
-
-
-
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-//        setting the values up in the xml
-        binding.gameViewModel=viewModel
-        binding.maxNoOfWords = MAX_NO_OF_WORDS
-        binding.lifecycleOwner = viewLifecycleOwner
+        if (this::binding.isInitialized) {
+            binding.gameViewModel = viewModel
+            binding.lifecycleOwner = viewLifecycleOwner
 
-
-        binding.submit.setOnClickListener { onSubmitWord() }
-        binding.skip.setOnClickListener { onSkipWord() }
-
-
-
-    }
-
-
-    private fun onSubmitWord() {
-        val userInput:String = binding.textInputEditText.text.toString()
-
-        if(viewModel.isUserwordCorrect(userInput)){
-            setErrorTextField(false)
-            if(!viewModel.nextWord()){
-                showFinalScoreDialog()
-
-            }
-        }else{
-            setErrorTextField(true)
+            binding.submit.setOnClickListener { onSubmitWord() }
+            binding.skip.setOnClickListener { onSkipWord() }
         }
-
-
-    }
-
-
-    private fun onSkipWord() {
-        if (viewModel.nextWord()) {
-            setErrorTextField(false)
-        } else {
+        viewModel.showFinalDialog.observe(viewLifecycleOwner){
             showFinalScoreDialog()
         }
     }
 
+    private fun onSubmitWord() {
+        val userInput:String = binding.textInputEditText.text.toString()
+        if (viewModel.submitWord(userInput)){
+            setErrorTextField(false)
+        }else{
+            setErrorTextField(true)
+        }
+    }
 
-    /*
-     * Re-initializes the data in the ViewModel and updates the views with the new data, to
-     * restart the game.
-     */
+    private fun onSkipWord() {
+        setErrorTextField(false)
+        viewModel.skipWord()
+    }
+
     private fun restartGame() {
         setErrorTextField(false)
         viewModel.reInit()
     }
 
-    /*
-     * Exits the game.
-     */
     private fun exitGame() {
         activity?.finish()
     }
 
-    /*
-    * Sets and resets the text field error status.
-    */
     private fun setErrorTextField(error: Boolean) {
         if (error) {
             binding.textField.isErrorEnabled = true
@@ -125,8 +87,6 @@ class GameFragment : Fragment() {
             binding.textInputEditText.text = null
         }
     }
-
-
 
     private fun showFinalScoreDialog() {
         MaterialAlertDialogBuilder(requireContext())
